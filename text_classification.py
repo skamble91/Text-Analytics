@@ -1,7 +1,7 @@
 #Code for Text Classification Using Pyspark 
 # walmart analysis
 from pyspark.sql import SQLContext, Row, HiveContext
-from pyspark.sql.functions import col, udf, StringType
+from pyspark.sql.functions import col, udf, StringType, concat, lit
 from pyspark.sql.types import *
 from pyspark import SparkContext
 import nltk
@@ -12,13 +12,10 @@ from nltk.corpus import stopwords
 from string import digits
 from pyspark.mllib.regression import LabeledPoint
 from pyspark.mllib.classification import LogisticRegressionWithLBFGS, LogisticRegressionModel
-from pyspark.mllib.regression import LabeledPoint
 from pyspark.ml.feature import HashingTF, IDF, Tokenizer
 from pyspark.sql.types import DoubleType
 from pyspark.ml import Pipeline
-from pyspark.sql import Row, SQLContext
 from pyspark.ml.feature import StringIndexer
-from pyspark.sql.functions import concat, col, lit
 from pyspark.mllib.linalg import Vectors
 from pyspark.ml.feature import VectorAssembler
 from pyspark.mllib.evaluation import BinaryClassificationMetrics
@@ -131,7 +128,7 @@ modellr = LogisticRegressionWithLBFGS.train(lp, iterations=100)
 modellr.clearThreshold()
 modellr.setThreshold(0.7)
 
-model_path= os.path.join('/user/sk185423', 'models', 'walmart_rri')
+model_path= os.path.join('/user/name', 'models', 'log_reg_text')
 modellr.save(sc,model_path)
 
 predictionAndLabelspoint65 = testData.map(lambda p: (float(modellr.predict(p.FeaturesFinal)), p.label))
