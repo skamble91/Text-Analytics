@@ -41,41 +41,9 @@ data=df_text.withColumn("label", ol_val(df_text.col2,df_text.col2))
 
 # indexerop1 = StringIndexer(inputCol="col4", outputCol="op1")
 # indexerop2 = StringIndexer(inputCol="col5", outputCol="op2")
-# indexerop3 = StringIndexer(inputCol="col6", outputCol="op3")
-# indexerpr1 = StringIndexer(inputCol="col7", outputCol="pr1")
-
 
 # indexedop1 = indexerop1.fit(data).transform(data)
 # indexedop2 = indexerop2.fit(indexedop1).transform(indexedop1)
-# indexedop3 = indexerop3.fit(indexedop2).transform(indexedop2)
-# indexedpr1 = indexerpr1.fit(indexedop3).transform(indexedop3)
-# indexed = indexerpr2.fit(indexedpr1).transform(indexedpr1)
-
-
-def cleaning_text_new(sentence):
-  sentence=sentence.lower()
-  sentence=" "+sentence+" "
-  sentence = re.sub('[%s]' % re.escape(string.punctuation),'',sentence)
-  if re.findall('\stmc\s\d+',sentence):
-    sentence=re.sub('\stmc\s',' tmc',sentence)
-  if re.findall('\ssc\s\d+',sentence):
-    sentence=re.sub("\ssc\s",' sc',sentence)
-  stops = set(["a","about","all","an","become","beyond","do","etc","for","her","interest","mine","now","them","throughout","very","which","thanks",
-  "above","almost","and","becomes","both","done","even","former","here","into","more","nowhere","perhaps","sixty","themselves","thru",
-  "via","while","posrr","scorr","thankyou","across","alone","another","becoming","bottom","due","ever","formerly","hereafter",
-  "is","moreover","of","please","so","then","thus","w","whither","posrt","scodi","along","any","been","but","during","every",
-  "forty","hereby","it","most","often","put","some","thence","tl""was","who","posdi","scodu","after","already","anyhow","before",
-  "by","each","everyone","fosm","herein","its","mostly","once","rather","somehow","there","tm","we","whoever","afterwards",
-  "also","anyone","beforehand"])
-  cleaned=' '.join([w for w in sentence.split() if not w in stops])
-  cleaned=' '.join([w for w in cleaned.split() if not len(w)<2 and w not in ('no', 'sc','ln') ])
-  cleaned=cleaned
-  if(len(cleaned)<=1):
-     return "NA"
-  else:
-     return cleaned
-
-
 
 #text Cleaning
 def cleaning_text(sentence):
@@ -93,7 +61,7 @@ def cleaning_text(sentence):
    "by","each","everyone","fosm","herein","its","mostly","once","rather","somehow","there","tm","we","whoever","posdu","scord","afterwards",
    "also","anyone","beforehand"])
    cleaned=' '.join([w for w in sentence.split() if not w in stops])
-   cleaned=' '.join([w for w in cleaned.split() if not len(w)<2 and w not in ('no', 'sc','ln') ])
+   cleaned=' '.join([w for w in cleaned.split() if not len(w)<2 ])
    cleaned=cleaned
    if(len(cleaned)<=1):
       return "NA"
@@ -134,7 +102,6 @@ modellr.save(sc,model_path)
 predictionAndLabelspoint65 = testData.map(lambda p: (float(modellr.predict(p.FeaturesFinal)), p.label))
 # modellr.clearThreshold()
 # modellr.setThreshold(0.67)
-# predictionAndLabelspoint67 = test.map(lambda p: (float(modellr.predict(p.FeaturesFinal)), p.label))
 
 total=test_data.count()
 correct = predictionAndLabelspoint65.filter(lambda (predicted, actual): predicted == actual).count()
@@ -142,12 +109,6 @@ count_1_1 = predictionAndLabelspoint65.filter(lambda (predicted, actual): predic
 count_0_1 = predictionAndLabelspoint65.filter(lambda (predicted, actual): predicted == 1.0 and actual==0.0).count()
 count_1_0 = predictionAndLabelspoint65.filter(lambda (predicted, actual): predicted == 0.0 and actual==1.0).count()
 count_0_0 = predictionAndLabelspoint65.filter(lambda (predicted, actual): predicted == actual==0.0).count()
-
-# correct = predictionAndLabelspoint67.filter(lambda (predicted, actual): predicted == actual).count()
-# count_1_1 = predictionAndLabelspoint67.filter(lambda (predicted, actual): predicted == actual==1.0).count()
-# count_0_1 = predictionAndLabelspoint67.filter(lambda (predicted, actual): predicted == 1.0 and actual==0.0).count()
-# count_1_0 = predictionAndLabelspoint67.filter(lambda (predicted, actual): predicted == 0.0 and actual==1.0).count()
-# count_0_0 = predictionAndLabelspoint67.filter(lambda (predicted, actual): predicted == actual==0.0).count()
 
 accuracy = float(correct)/ float(total)
 misclassificationrate=float(count_0_1+count_1_0)/float(total)
